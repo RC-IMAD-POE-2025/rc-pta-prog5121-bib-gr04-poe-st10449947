@@ -55,6 +55,12 @@ public class register4 extends javax.swing.JFrame {
 
         FirstnameTextField.setText("First name:");
 
+        fnTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fnTextFieldActionPerformed(evt);
+            }
+        });
+
         jLabel3.setText("Username:");
 
         jLabel4.setText("Last name:");
@@ -205,6 +211,11 @@ public class register4 extends javax.swing.JFrame {
         String confirmpassword=new String(confirmPasswordField.getPassword());
         String phonenumber=phonenoTextField.getText();
         
+        if (firstname.isEmpty() || lastname.isEmpty() || username.isEmpty() ||
+    password.isEmpty() || confirmpassword.isEmpty() || phonenumber.isEmpty()) {
+    JOptionPane.showMessageDialog(this, "All fields are required.");
+    return;
+}
   if (!CheckUsername(username)) {
     JOptionPane.showMessageDialog(this, "Username is not correctly formatted. It must contain an underscore and be no more than 5 characters long.");
     return;
@@ -226,7 +237,8 @@ if (!CheckCellphone(phonenumber)) {
 if (userdatastore.userCredentials.containsKey(username)){
     JOptionPane.showMessageDialog(this,"Username already exists");
     return;
-    }                                              
+    }     
+
 userdatastore.userCredentials.put(username, password);
 userdatastore.userphoneno.put(username, phonenumber);
 userdatastore.userFirstname.put(username, firstname);
@@ -235,11 +247,14 @@ userdatastore.userLastname.put(username, lastname);
 int results=JOptionPane.showConfirmDialog(null,"Are you sure you want to register? " , "Register Confirmation" , JOptionPane.YES_NO_OPTION);
 if(results==JOptionPane.YES_OPTION){
 JOptionPane.showMessageDialog(this, "Your registration is successful!");
-}else{
-    JOptionPane.showMessageDialog(this, "Goodbye!");
 }
-  new Login().setVisible(true);
+
+new Login().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void fnTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fnTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fnTextFieldActionPerformed
 
     /**
      * @param args the command line arguments

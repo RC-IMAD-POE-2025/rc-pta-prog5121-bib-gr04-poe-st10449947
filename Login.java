@@ -161,7 +161,7 @@ public class Login extends javax.swing.JFrame {
             PasswordField.setText("_");
 
         }
-          new Chatbox("testuser").setVisible(true);
+            new Chatbox("Quickchat").setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

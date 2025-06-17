@@ -4,6 +4,7 @@
  */
 package register4;
 
+import java.util.List;
 import javax.swing.JOptionPane;
 import  register4.userdatabase;
 import java.util.regex.Matcher;
@@ -117,42 +118,49 @@ private String loggedInUsername;
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnQuickChatMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuickChatMenuActionPerformed
-       
-        Object[] options={"1.Send Message " , "2.Show recently send messages " , "3.Quit"};
-        int choice = JOptionPane.showOptionDialog(
-                this ,
-                "Please select an option from the menu:",
-                "QuickChat Main Menu",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                options,
-                options[0]
-        );
+      
+  String input = JOptionPane.showInputDialog(this,
+    "Please enter an option number:\n" +
+    "1. Send Message\n" +
+    "2. Show recently sent messages\n" +
+    "3. Quit"
+);
+
+if (input == null) {
+    JOptionPane.showMessageDialog(this, "Menu cancelled. No action taken.");
+    return;
+}
+
+int choice;
+try {
+    choice = Integer.parseInt(input.trim());
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Invalid input. Please enter a number.");
+    return;
+}
+
         switch(choice){
-            case 0:
-                sendMessagesFunction();
-                
+    case 1:  // Send Message
+        sendMessagesFunction();
+        break;
+    case 2:
+                showReportsMenu();
                 break;
-            case 1:
-                JOptionPane.showMessageDialog(this, "Coming Soon." , "Feature Under development",JOptionPane.INFORMATION_MESSAGE);
-                break;
-            case 2:
-                int confirm=JOptionPane.showConfirmDialog(this, "Are you sure you want to quit Quickchat?","confirm Quit",JOptionPane.YES_NO_OPTION);
-                if(confirm==JOptionPane.YES_OPTION){
-                    this.dispose();
-                    System.exit(0);
-                }
-                    break;
-            case JOptionPane.CLOSED_OPTION:
-                JOptionPane.showMessageDialog(this,"Menu closed.No action taken.");
-           
-                }
+    case 3:  // Quit
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit Quickchat?", "Confirm Quit", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            this.dispose();
+            System.exit(0);
+        }
+        break;
+    default:
+        
+        JOptionPane.showMessageDialog(this, "Invalid option selected. Please enter 1, 2, or 3.");
+}
     }
         private void sendMessagesFunction() {
         //
-      
-    String numMessagesStr = JOptionPane.showInputDialog(this, "How many messages do you wish to send?");
+       String numMessagesStr = JOptionPane.showInputDialog(this, "How many messages do you wish to send?");
     if (numMessagesStr == null || numMessagesStr.trim().isEmpty()) {
         JOptionPane.showMessageDialog(this, "Message sending cancelled.");
         return;
@@ -230,14 +238,93 @@ private String loggedInUsername;
                 break;
         }
     }
-    // Show total messages sent
-    JOptionPane.showMessageDialog(this, "Total messages: " + Message.returnTotalMessages(), "Total Messages Sent", JOptionPane.INFORMATION_MESSAGE);
-
-
-
         // "The total number of messages should be accumulated and displayed once all the messages have been sent."
+        JOptionPane.showMessageDialog(this, "Total messages: " + Message.returnTotalMessages(), "Total Messages Sent", JOptionPane.INFORMATION_MESSAGE);
+        }
+        private void showReportsMenu() {
+        String[] options = {
+                "1. Display senders & recipients of all sent messages",
+                "2. Show the longest sent message",
+                "3. Search message by ID",
+                "4. Search messages by recipient",
+                "5. Delete message by hash",
+                "6. Display full message report",
+                "7. Back to main menu"
+        };
+                          while (true) {
+        String choice = (String) JOptionPane.showInputDialog(this, "Select a report option:", "Reports Menu",
+                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
+        if (choice == null || choice.startsWith("7")) break;
 
+        switch (choice.charAt(0)) {
+            case '1':
+                JOptionPane.showMessageDialog(this, Message.getSenderRecipientList(), "Senders and Recipients", JOptionPane.INFORMATION_MESSAGE);
+                break;
+
+            case '2':
+                Message longest = Message.getLongestMessage();
+                if (longest != null) {
+                    JOptionPane.showMessageDialog(this, "Longest Message:\n" + longest, "Longest Message", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "No sent messages found.", "Longest Message", JOptionPane.WARNING_MESSAGE);
+                }
+                break;
+                case '3':
+                String id = JOptionPane.showInputDialog(this, "Enter Message ID:");
+                if (id != null) {
+                    Message found = Message.getMessageByID(id.trim());
+                    if (found != null) {
+                        JOptionPane.showMessageDialog(this, "Recipient: " + found.getRecipient() + "\nMessage: " + found.getContent(),
+                                "Message Found", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Message ID not found.", "Search Result", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+                break;
+                                           case '4':
+                String rec = JOptionPane.showInputDialog(this, "Enter recipient cell number:");
+                if (rec != null) {
+                    List<Message> messages = Message.searchMessagesByRecipient(rec.trim());
+                    if (!messages.isEmpty()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (Message m : messages) {
+                            sb.append(m.toString()).append("\n\n");
+                        }
+                        JOptionPane.showMessageDialog(this, sb.toString(), "Messages to " + rec, JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "No messages found for recipient.", "Search Result", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+                break;
+
+            case '5':
+                String hash = JOptionPane.showInputDialog(this, "Enter message hash to delete:");
+                if (hash != null) {
+                    boolean deleted = Message.deleteMessageByHash(hash.trim());
+                    if (deleted) {
+                        
+                    JOptionPane.showMessageDialog(this, "Message deleted successfully.", "Delete Message", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Message hash not found.", "Delete Message", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+                break;
+
+            case '6':
+                String fullReport = Message.getFullReport();
+                if (fullReport.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No sent messages to report.", "Full Report", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, fullReport, "Full Message Report", JOptionPane.INFORMATION_MESSAGE);
+                }
+                break;
+                
+                case '7':
+                           JOptionPane.showMessageDialog(this, "Returning to main menu.", "Back", JOptionPane.INFORMATION_MESSAGE);
+                           return;
+          }
+      }
     }//GEN-LAST:event_btnQuickChatMenuActionPerformed
 
     /**
